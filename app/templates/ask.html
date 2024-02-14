@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  </head>
+  <body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title is-1">
+        Hello World
+      </h1>
+      <p class="subtitle">
+        My first website with <strong>Bulma</strong>!
+      </p>
+    </div>
+    
+  </section>
+  <section class="section">
+    <h2 class="title is-2">Poser votre question</h2>
+    <form method="post">
+      <div class="field">
+        <label class="label" for="title">Titre de la question</label>
+        <div class="control">
+          <input id="title" name="title" class="input" type="text">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label" for="body">Corps de la question</label>
+        <div class="control">
+          <textarea class="textarea" id="body" name="body"></textarea>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label" for="tags">Étiquettes</label>
+        <div class="control">
+          <input id="tags" name="tags" class="input" type="text">
+        </div>
+      </div>
+      <div id="tagsList" class="tags">
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-link">Créer la question</button>
+        </div>
+        <div class="control">
+          <a href="/" class="button is-link is-light">Annuler</a>
+        </div>
+      </div>
+    </form>
+  </section>
+    <script>
+      const createTagElements = (e) => {
+        const tagsText = e.target.value;
+        let cleanedTagText = tagsText.replaceAll(',', ' ');
+        cleanedTagText = cleanedTagText.replaceAll(';', ' ');
+        cleanedTagText = cleanedTagText.replaceAll(/ +/g, ' ');
+        e.target.value = cleanedTagText;
+        const tagsList = cleanedTagText.split(' ');
+        const cleanedtagsList = [...new Set(tagsList)];
+        const tagsElementList = cleanedtagsList.map((tagText) => {
+          const tagElement = document.createElement('span');
+          tagElement.className = 'tag';
+          tagElement.innerText = tagText;
+          return tagElement;
+        });
+        const tagsListElement = document.querySelector('#tagsList');
+        tagsListElement.replaceChildren(...tagsElementList);
+      }
+      const tag = document.querySelector('#tags');
+      tag.oninput = createTagElements;
+    </script>
+  </body>
+</html>
