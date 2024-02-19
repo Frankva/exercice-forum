@@ -30,9 +30,11 @@ def insert(name) -> None:
         cur = conn.cursor()
         cur.execute(get_request_insert(), (name, ))
         conn.commit()
-        conn.close()
     except Exception as e:
         print(e, file=sys.stderr)
+        conn.rollback()
+    finally:
+        conn.close()
 
 def formatTags(rawTags: str) -> tuple:
     '''

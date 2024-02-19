@@ -10,6 +10,7 @@ def get_request_insert1() -> str:
     return ('INSERT INTO questions (title) '
        'VALUES '
        '(?); ')
+
 def get_request_insert2() -> str:
     '''
     >>> type(get_request_insert2())
@@ -18,6 +19,7 @@ def get_request_insert2() -> str:
     return('INSERT INTO messages (text, person_id) '
        'VALUES '
        '(?, ?); ')
+
 def get_request_insert3() -> str:
     '''
     >>> type(get_request_insert3())
@@ -61,10 +63,11 @@ def insert(title: str, body: str, tags: tuple, user_id) -> None:
         for tag in tags:
             cur.execute(get_request_insert4(), (tag, ))
         conn.commit()
-        conn.close()
     except Exception as e:
         print(e)
         conn.rollback()
+    finally:
+        conn.close()
 
 def get_request_select() -> str:
     '''
@@ -88,6 +91,8 @@ def select() -> tuple:
         return rows
     except Exception as e:
         print(e)
+    finally:
+        conn.close()
 
 def get_request_select_one():
     '''
@@ -114,6 +119,8 @@ def select_one(id) -> tuple:
         return rows
     except Exception as e:
         print(e)
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     import doctest

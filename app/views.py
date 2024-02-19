@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 app.config.from_object('config')
 import sys
+from .models import answers as answersModels
 
 
 @app.route('/')
@@ -28,6 +29,12 @@ def question_get(id):
 @app.post('/question/<id>')
 def question_post(id):
     print(request.form['answer'], file=sys.stderr)
+    answersModels.insert(text=request.form['answer'],
+                         person_id=1,
+                         question_id=id)
+    # TODO
+    # above change the 1 when implement session
+    
     return question_get(id)
 
     
