@@ -16,10 +16,33 @@
         My first website with <strong>Bulma</strong>!
       </p>
     </div>
-    
   </section>
   <section class="section">
-
+    <div class="container">
+      <a href="/" class="button is-link is-light">Retour</a>
+    </div>
+    <div class="container block">
+      <h2 class="title is-2">{{ question.title }}</h2>
+      <p class="content">{{ question.text }}</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <h3 class="title is-3">Réponses</h3>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <form method="post">
+        <div class="field">
+          <label for="answer" class="label title is-3">Votre réponse</label>
+          <div class="control">
+            <textarea id="answer" class="textarea" name="answer"></textarea>
+          </div>
+        </div>
+        <input class="button is-link" type="submit">
+      </form>
+    </div>
   </section>
   </body>
 </html>

@@ -1,0 +1,16 @@
+{
+  "db": {
+    "user": "root",
+    "password": "root",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "database": "forum20240213"
+  },
+  "dbtest": {
+    "user": "root",
+    "password": "root",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "database": "forum20240213test"
+  }
+}

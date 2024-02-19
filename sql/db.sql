@@ -6,7 +6,7 @@ USE forum20240213;
 
 CREATE TABLE tags (
     tag_id bigint auto_increment primary key,
-    name varchar(255)
+    name varchar(255) unique
 );
 
 CREATE TABLE questions (
@@ -16,8 +16,8 @@ CREATE TABLE questions (
 
 CREATE TABLE question_have_tag (
     question_have_tag bigint auto_increment primary key,
-    question_id bigint,
-    tag_id bigint,
+    question_id bigint not null,
+    tag_id bigint not null,
     foreign key (question_id) REFERENCES questions (question_id),
     foreign key (tag_id) REFERENCES tags (tag_id)
 );
@@ -32,7 +32,7 @@ CREATE TABLE messages (
     message_id bigint auto_increment primary key,
     text varchar(15000),
     person_id bigint,
-    create_date datetime,
+    create_date datetime default CURRENT_TIMESTAMP,
     foreign key (person_id) REFERENCES people (person_id)
 );
 
