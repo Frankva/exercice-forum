@@ -28,8 +28,7 @@ def question_get(id):
     answers = answersModels.select(id)
     print(answers, file=sys.stderr)
     print(type(answers), file=sys.stderr)
-    return render_template('question.html', question=question,
-                           answers=answers)
+    return render_template('question.html', question=question, answers=answers)
 
 @app.post('/question/<id>')
 def question_post(id):

@@ -99,11 +99,13 @@ def get_request_select_one():
     >>> type(get_request_select())
     <class 'str'>
     '''
-    return ('SELECT title, text '
-        'FROM questions '
-        'NATURAL JOIN question_have_message '
-        'NATURAL JOIN messages '
-        'WHERE question_id=?; ')
+
+    return ('SELECT title, text, firstname, lastname, create_date '
+    'FROM questions '
+    'NATURAL JOIN people '
+    'NATURAL JOIN question_have_message '
+    'NATURAL JOIN messages '
+    'WHERE question_id=?; ')
 
 def select_one(id) -> tuple:
     '''
@@ -114,8 +116,13 @@ def select_one(id) -> tuple:
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(get_request_select_one(), (id, ))
-        rows = tuple(map(lambda row: {'title': row[0],
-                                             'text': row[1]}, cur))
+        rows = tuple(map(lambda row: {
+            'title': row[0],
+            'text': row[1],
+            'firstname': row[2],
+            'lastname': row[3], 
+            'create_date': row[4]},
+                         cur))
         return rows
     except Exception as e:
         print(e)

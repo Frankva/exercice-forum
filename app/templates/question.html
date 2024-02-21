@@ -26,6 +26,12 @@
     <div class="container block">
       <h2 class="title is-2">{{ question.title }}</h2>
       <p class="content">{{ question.text }}</p>
+      <footer>
+        <small>
+          <p>Demandé le {{ question.create_date }}</p>
+          <p><strong>{{ question.firstname }} {{ question.lastname }}</strong></p>
+        </small>
+      </footer>
     </div>
   </section>
   <section class="section">
