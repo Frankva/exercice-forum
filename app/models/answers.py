@@ -7,8 +7,8 @@ def get_request_insert():
     <class 'str'>
     '''
     return ('INSERT messages (text, person_id) '
-        + 'VALUES '
-        + '(?, ?); ')
+        'VALUES '
+        '(?, ?); ')
 
 def get_request_message_answer_question():
     '''
@@ -34,6 +34,37 @@ def insert(text, person_id, question_id):
     except Exception as e:
         print(e)
         conn.rollback()
+    finally:
+        conn.close()
+
+def get_request_select():
+    '''
+    >>> type(get_request_message_answer_question())
+    <class 'str'>
+    '''
+    return ('SELECT text, firstname, lastname, create_date '
+        'FROM messages '
+        'NATURAL JOIN message_answer_question '
+        'NATURAL JOIN people '
+        'WHERE question_id = ?; ')
+
+def select(question_id):
+    '''
+    >>> type(select(1))
+    <class 'tuple'>
+    '''
+    try: 
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_select(), (question_id, ))
+        rows = tuple(map(lambda row: {'text': row[0],
+                                      'firstname': row[1],
+                                      'lastname': row[2],
+                                      'create_date': row[3],
+                                      }, cur))
+        return rows
+    except Exception as e:
+        print(e)
     finally:
         conn.close()
 

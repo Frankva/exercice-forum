@@ -8,14 +8,16 @@
   </head>
   <body>
   <section class="section">
-    <div class="container">
+    <header class="container">
+      <hgroup>
       <h1 class="title is-1">
         Hello World
       </h1>
       <p class="subtitle">
         My first website with <strong>Bulma</strong>!
       </p>
-    </div>
+      </hgroup>
+    </header>
   </section>
   <section class="section">
     <div class="container">
@@ -29,6 +31,17 @@
   <section class="section">
     <div class="container">
       <h3 class="title is-3">Réponses</h3>
+      {% for answer in answers %}
+        <article class="box">
+          <p class="content">{{ answer.text }}</p>
+          <footer>
+            <small>
+              <p>Répondu le {{ answer.create_date }}</p>
+              <p><strong>{{ answer.firstname }} {{ answer.lastname }}</strong></p>
+            </small>
+          </footer>
+        </article>
+      {% endfor %}
     </div>
   </section>
   <section class="section">

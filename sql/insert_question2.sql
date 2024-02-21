@@ -2,9 +2,9 @@
 INSERT INTO questions (title)
 VALUES
 (?);
-INSERT INTO messages (text)
+INSERT INTO messages (text, person_id)
 VALUES
-(?);
+(?, ?);
 INSERT INTO question_have_message (question_id, message_id)
 VALUES
 ((SELECT MAX(question_id) FROM questions),
