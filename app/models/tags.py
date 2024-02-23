@@ -47,6 +47,41 @@ def formatTags(rawTags: str) -> tuple:
     tags.sort()
     return tuple(tags)
 
+def get_request_select_where_question() -> str:
+    '''
+    >>> type(get_request_select_where_question())
+    <class 'str'>
+    '''
+    return ('SELECT name '
+        'FROM tags '
+        'NATURAL JOIN question_have_tag '
+        'WHERE question_id=?; ')
+
+def get_request_select_all() -> str:
+    '''
+    >>> type(get_request_select_all())
+    <class 'str'>
+    '''
+
+    return ('SELECT name '
+        'FROM tags; ')
+
+
+def select_all() -> tuple:
+    '''
+    >>> type(select_all())
+    <class 'tuple'>
+    '''
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_select_all())
+        rows = tuple(map(lambda row: row[0], cur))
+        return rows
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":

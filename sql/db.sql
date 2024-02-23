@@ -6,7 +6,7 @@ USE forum20240213;
 
 CREATE TABLE tags (
     tag_id bigint auto_increment primary key,
-    name varchar(255) unique
+    name varchar(255) unique not null
 );
 
 CREATE TABLE questions (

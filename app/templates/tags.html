@@ -18,9 +18,9 @@
     </div>
   </section>
   <section class="section">
-    {% for question in questions %}
+    {% for tag in tags %}
       <div class="container block">
-        <a class="is-size-2"href="{{ url_for('question_get', id=question.question_id)}}">{{ question.title }}</a>
+        <a class="is-size-2"href="{{ url_for('tagged_questions', tag=tag)}}">{{ tag }}</a>
       </div>
     {% endfor %}
       <div class="container">

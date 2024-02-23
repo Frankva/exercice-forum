@@ -21,17 +21,31 @@
   </section>
   <section class="section">
     <div class="container">
-      <a href="/" class="button is-link is-light">Retour</a>
+      <a href="{{ url_for('index') }}" class="button is-link is-light">Retour</a>
     </div>
     <div class="container block">
       <h2 class="title is-2">{{ question.title }}</h2>
-      <p class="content">{{ question.text }}</p>
-      <footer>
-        <small>
-          <p>Demandé le {{ question.create_date }}</p>
-          <p><strong>{{ question.firstname }} {{ question.lastname }}</strong></p>
-        </small>
-      </footer>
+      <div class="columns ">
+        <aside class="column has-text-centered">
+          <button class="button">+</button>
+          <div>
+            <span class="tag is-large is-white">0</span>
+          </div>
+          <button class="button">−</button>
+        </aside>
+        <div class="column is-full">
+          <p class="content">{{ question.text }}</p>
+          {% for tag in tags %}
+          <a class="tag" href="{{ url_for('tagged_questions', tag=tag) }}">{{ tag }}</a>
+          {% endfor %}
+          <footer>
+            <small>
+              <p>Demandé le {{ question.create_date }}</p>
+              <p><strong>{{ question.firstname }} {{ question.lastname }}</strong></p>
+            </small>
+          </footer>
+        </div>
+      </div>
     </div>
   </section>
   <section class="section">
@@ -39,13 +53,24 @@
       <h3 class="title is-3">Réponses</h3>
       {% for answer in answers %}
         <article class="box">
-          <p class="content">{{ answer.text }}</p>
-          <footer>
-            <small>
-              <p>Répondu le {{ answer.create_date }}</p>
-              <p><strong>{{ answer.firstname }} {{ answer.lastname }}</strong></p>
-            </small>
-          </footer>
+          <div class="columns">
+            <aside class="column has-text-centered">
+              <button class="button">+</button>
+              <div>
+                <span class="tag is-large is-white">0</span>
+              </div>
+              <button class="button">−</button>
+            </aside>
+            <div class="column is-full">
+              <p class="content">{{ answer.text }}</p>
+              <footer>
+                <small>
+                  <p>Répondu le {{ answer.create_date }}</p>
+                  <p><strong>{{ answer.firstname }} {{ answer.lastname }}</strong></p>
+                </small>
+              </footer>
+            </div>
+          </div>
         </article>
       {% endfor %}
     </div>

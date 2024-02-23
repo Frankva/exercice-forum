@@ -1,10 +1,11 @@
 from .models import questions as questionsModel
 from .models.tags import formatTags
+from .models import tags as tagsModel
 from flask import Flask, render_template, request
 app = Flask(__name__)
 app.config.from_object('config')
 import sys
-from .models import answers as answersModels
+from .models import answers as answersModel
 
 
 @app.route('/')
@@ -22,24 +23,30 @@ def questions_get():
 
 @app.get('/question/<id>')
 def question_get(id):
-    question = questionsModel.select_one(id)[0]
+    question, tags = questionsModel.select_one(id)
     
     question['id'] = id
-    answers = answersModels.select(id)
+    answers = answersModel.select(id)
     print(answers, file=sys.stderr)
     print(type(answers), file=sys.stderr)
-    return render_template('question.html', question=question, answers=answers)
+    return render_template('question.html', question=question, answers=answers,
+                           tags=tags)
 
-@app.post('/question/<id>')
+@app.post('/question/<int:id>')
 def question_post(id):
     print(request.form['answer'], file=sys.stderr)
-    answersModels.insert(text=request.form['answer'],
+    answersModel.insert(text=request.form['answer'],
                          person_id=1,
                          question_id=id)
     # TODO
     # above change the 1 when implement session
     
     return question_get(id)
+
+@app.route('/questions/tagged/<tag>')
+def tagged_questions(tag):
+    questions = questionsModel.select_where_tag(tag)
+    return render_template('questions.html', questions=questions)
 
     
 
@@ -59,3 +66,8 @@ def ask_post():
     # TODO
     # above change the 1 when implement session
     return ask_get()
+
+@app.route('/tags')
+def tags():
+    tags = tagsModel.select_all()
+    return render_template('tags.html', tags=tags)

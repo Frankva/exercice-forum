@@ -1,6 +1,7 @@
 import sys
 from pool import get_connection
 import tags as tagsModel
+from functools import reduce
 
 def get_request_insert1() -> str:
     '''
@@ -121,8 +122,39 @@ def select_one(id) -> tuple:
             'text': row[1],
             'firstname': row[2],
             'lastname': row[3], 
-            'create_date': row[4]},
-                         cur))
+            'create_date': row[4]}, cur))
+        question = rows[0]
+        cur.execute(tagsModel.get_request_select_where_question(), (id, ))
+        tags = tuple(map(lambda row: row[0], cur))
+        return question, tags
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
+def get_request_select_where_tag() -> str:
+    '''
+    >>> type(get_request_select_where_tag())
+    <class 'str'>
+    '''
+
+    return ('SELECT question_id, title '
+        'FROM questions '
+        'NATURAL JOIN question_have_tag '
+        'NATURAL JOIN tags '
+        'WHERE name=?; ')
+
+def select_where_tag(tag) -> tuple:
+    '''
+    >>> type(select_where_tag('tag_name'))
+    <class 'tuple'>
+    '''
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_select_where_tag(), (tag, ))
+        rows = tuple(map(lambda row: {'question_id': row[0],
+                                             'title': row[1]}, cur))
         return rows
     except Exception as e:
         print(e)
