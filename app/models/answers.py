@@ -42,7 +42,7 @@ def get_request_select():
     >>> type(get_request_message_answer_question())
     <class 'str'>
     '''
-    return ('SELECT text, firstname, lastname, create_date '
+    return ('SELECT message_id, text, firstname, lastname, create_date '
         'FROM messages '
         'NATURAL JOIN message_answer_question '
         'NATURAL JOIN people '
@@ -57,10 +57,11 @@ def select(question_id):
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(get_request_select(), (question_id, ))
-        rows = tuple(map(lambda row: {'text': row[0],
-                                      'firstname': row[1],
-                                      'lastname': row[2],
-                                      'create_date': row[3],
+        rows = tuple(map(lambda row: {'message_id': row[0],
+                                      'text': row[1],
+                                      'firstname': row[2],
+                                      'lastname': row[3],
+                                      'create_date': row[4],
                                       }, cur))
         return rows
     except Exception as e:

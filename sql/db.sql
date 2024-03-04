@@ -54,10 +54,12 @@ CREATE TABLE message_answer_question (
 
 CREATE TABLE person_vote_message (
     person_vote_message_id bigint auto_increment primary key,
+    is_upvote boolean not null,
     person_id bigint,
     message_id bigint,
     foreign key (person_id) REFERENCES people (person_id),
-    foreign key (message_id) REFERENCES messages (message_id)
+    foreign key (message_id) REFERENCES messages (message_id),
+    unique (person_id, message_id)
 );
 
 CREATE TABLE emails (

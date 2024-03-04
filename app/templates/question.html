@@ -4,7 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.min.css') }}">
+
+    <script defer src="{{ url_for('static', filename='components/VotingButtons.js') }}">
+
+    </script>
   </head>
   <body>
   <section class="section">
@@ -26,12 +30,11 @@
     <div class="container block">
       <h2 class="title is-2">{{ question.title }}</h2>
       <div class="columns ">
-        <aside class="column has-text-centered">
-          <button class="button">+</button>
-          <div>
-            <span class="tag is-large is-white">0</span>
-          </div>
-          <button class="button">−</button>
+        <aside class="column ">
+          <voting-buttons data-message-id="{{ question.id }}" data-uservote="0"
+            data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
+            data-nullify-url="{{ url_for('nullify_vote') }}"
+          ></voting-buttons>
         </aside>
         <div class="column is-full">
           <p class="content">{{ question.text }}</p>
@@ -54,12 +57,11 @@
       {% for answer in answers %}
         <article class="box">
           <div class="columns">
-            <aside class="column has-text-centered">
-              <button class="button">+</button>
-              <div>
-                <span class="tag is-large is-white">0</span>
-              </div>
-              <button class="button">−</button>
+            <aside class="column">
+              <voting-buttons data-message-id="{{ answer.message_id }}" data-uservote="0"
+                data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
+                data-nullify-url="{{ url_for('nullify_vote') }}"
+              ></voting-buttons>
             </aside>
             <div class="column is-full">
               <p class="content">{{ answer.text }}</p>
@@ -88,5 +90,77 @@
       </form>
     </div>
   </section>
+  <script>
+
+
+    // const doUpvote = async (e) => {
+    //   // e.target.classList.add('is-link');
+    //   const messageId = e.target.attributes['data-id'].value;
+    //   const url = "{{ url_for('upvote') }}";
+    //   const response = await postData(url, { messageId: messageId });
+    // }
+
+    // const removeVote = async (e) => {
+    //   // e.target.classList.remove('is-link');
+    //   const messageId = e.target.attributes['data-id'].value;
+    //   const url = "{{ url_for('nullify_vote') }}";
+    //   const response = await postData(url, { messageId: messageId });
+    // }
+
+    // const upvote = async (e) => {
+    //   const messageId = e.target.attributes['data-id'].value;
+    //   const voteLabel = document.querySelector(`span[data-id="${messageId}"]`);
+    //   if (isDownvoted) {
+    //     isDownvoted = false;
+    //     voteLabel.innerText = Number(voteLabel.innerText) + 1;
+    //   }
+    //   if (!isUpvoted) {
+    //     await doUpvote(e);
+    //     isUpvoted = true;
+    //     voteLabel.innerText = Number(voteLabel.innerText) + 1;
+    //     return;
+    //   } 
+    //   await removeVote(e);
+    //   isUpvoted = false;
+    //   voteLabel.innerText = Number(voteLabel.innerText) - 1;
+    //   return;
+    // }
+ 
+
+
+    // const doDownvote = async (e) => {
+    //   const messageId = e.target.attributes['data-id'].value;
+    //   // e.target.classList.add('is-link');
+    //   const url = "{{ url_for('downvote') }}";
+    //   const response = await postData(url, { messageId: messageId });
+    // };
+
+    // const downvote = async (e) => {
+    //   const messageId = e.target.attributes['data-id'].value;
+    //   const voteLabel = document.querySelector(`span[data-id="${messageId}"]`);
+    //   if (isUpvoted) {
+    //     isUpvoted = false;
+    //     voteLabel.innerText = Number(voteLabel.innerText) - 1;
+    //   }
+    //   if (!isDownvoted) {
+    //     await doDownvote(e);
+    //     isDownvoted = true;
+    //     voteLabel.innerText = Number(voteLabel.innerText) - 1;
+    //     return;
+    //   } 
+    //   await removeVote(e);
+    //   isDownvoted = false;
+    //   voteLabel.innerText = Number(voteLabel.innerText) + 1;
+    //   return;
+    // };
+
+    // for (upvoteButton of upvoteButtons) {
+    //   upvoteButton.onclick = upvote;
+    // }
+    // for (downvoteButton of downvoteButtons) {
+    //   downvoteButton.onclick = downvote;
+    // }
+
+  </script>
   </body>
 </html>

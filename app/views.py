@@ -1,11 +1,12 @@
 from .models import questions as questionsModel
 from .models.tags import formatTags
 from .models import tags as tagsModel
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 app.config.from_object('config')
 import sys
 from .models import answers as answersModel
+from .models import votes as votesModel
 
 
 @app.route('/')
@@ -71,3 +72,31 @@ def ask_post():
 def tags():
     tags = tagsModel.select_all()
     return render_template('tags.html', tags=tags)
+
+@app.post('/upvote')
+def upvote():
+    print(request.get_json(), file=sys.stderr)
+    message_id = request.json['messageId'] 
+    votesModel.insert_vote(is_upvote=True, person_id=1, message_id=message_id)
+    # TODO
+    # above change the 1 when implement session
+    return jsonify({"message":"Ok"})
+    
+
+@app.post('/downvote')
+def downvote():
+    print(request.get_json(), file=sys.stderr)
+    message_id = request.json['messageId'] 
+    votesModel.insert_vote(is_upvote=False, person_id=1, message_id=message_id)
+    # TODO
+    # above change the 1 when implement session
+    return jsonify({"message":"Ok"})
+
+@app.post('/nullify-vote')
+def nullify_vote():
+    print(request.get_json(), file=sys.stderr)
+    message_id = request.json['messageId'] 
+    votesModel.delete_vote(person_id=1, message_id=message_id)
+    # TODO
+    # above change the 1 when implement session
+    return jsonify({"message":"Ok"})

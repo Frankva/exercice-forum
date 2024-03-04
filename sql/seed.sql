@@ -1,4 +1,5 @@
 use forum20240213;
+start transaction;
 
 INSERT INTO people (firstname, lastname)
 VALUES
@@ -23,7 +24,7 @@ VALUES
 INSERT INTO question_have_tag (question_id, tag_id)
 VALUES
 ((SELECT MAX(question_id) FROM questions), 
-        (SELECT tag_id FROM tags WHERE name='test_tag'));
+        (SELECT tag_id FROM tags WHERE name='test-tag'));
 
 
 INSERT messages (text)
@@ -35,3 +36,6 @@ VALUES
 ((SELECT max(message_id)
     FROM messages), 1);
 
+INSERT person_vote_message (is_upvote, person_id, message_id)
+VALUES
+(TRUE, 1, 1);
