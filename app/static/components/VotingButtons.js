@@ -9,8 +9,9 @@ class VotingButtons extends HTMLElement {
     </div>
     <button class="button" value="downvote">−</button> `
     this.label = this.querySelector('span')
-    this.noRefreshVotingNumber = Number(this.label.innerText);
-
+    // this.noRefreshVotingNumber = Number(this.label.innerText);
+    this.noRefreshVotingNumber = Number(this.vote);
+    this.label.innerText = this.noRefreshVotingNumber;
     this.upvoteButton = this.querySelector('button[value="upvote"]');
     this.downvoteButton = this.querySelector('button[value="downvote"]');
 
@@ -33,6 +34,10 @@ class VotingButtons extends HTMLElement {
 
   static get observedAttributes() {
     return ['data-uservote'];
+  }
+
+  get vote() {
+    return this.getAttribute('data-vote');
   }
   
   get userVote() {
@@ -68,7 +73,6 @@ class VotingButtons extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue === null) return;
     if (name === 'data-uservote') {
       this.updateStyle(newValue);
     }

@@ -31,9 +31,9 @@
       <h2 class="title is-2">{{ question.title }}</h2>
       <div class="columns ">
         <aside class="column ">
-          <voting-buttons data-message-id="{{ question.id }}" data-uservote="0"
+          <voting-buttons data-message-id="{{ question.id }}" data-uservote="{{ uservote }}"
             data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
-            data-nullify-url="{{ url_for('nullify_vote') }}"
+            data-nullify-url="{{ url_for('nullify_vote') }}" data-vote="{{ vote - uservote }}"
           ></voting-buttons>
         </aside>
         <div class="column is-full">
@@ -58,9 +58,9 @@
         <article class="box">
           <div class="columns">
             <aside class="column">
-              <voting-buttons data-message-id="{{ answer.message_id }}" data-uservote="0"
+              <voting-buttons data-message-id="{{ answer.message_id }}" data-uservote="{{ answer.uservote }}"
                 data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
-                data-nullify-url="{{ url_for('nullify_vote') }}"
+                data-nullify-url="{{ url_for('nullify_vote') }}" data-vote="{{ answer.vote - answer.uservote }}"
               ></voting-buttons>
             </aside>
             <div class="column is-full">
@@ -90,77 +90,5 @@
       </form>
     </div>
   </section>
-  <script>
-
-
-    // const doUpvote = async (e) => {
-    //   // e.target.classList.add('is-link');
-    //   const messageId = e.target.attributes['data-id'].value;
-    //   const url = "{{ url_for('upvote') }}";
-    //   const response = await postData(url, { messageId: messageId });
-    // }
-
-    // const removeVote = async (e) => {
-    //   // e.target.classList.remove('is-link');
-    //   const messageId = e.target.attributes['data-id'].value;
-    //   const url = "{{ url_for('nullify_vote') }}";
-    //   const response = await postData(url, { messageId: messageId });
-    // }
-
-    // const upvote = async (e) => {
-    //   const messageId = e.target.attributes['data-id'].value;
-    //   const voteLabel = document.querySelector(`span[data-id="${messageId}"]`);
-    //   if (isDownvoted) {
-    //     isDownvoted = false;
-    //     voteLabel.innerText = Number(voteLabel.innerText) + 1;
-    //   }
-    //   if (!isUpvoted) {
-    //     await doUpvote(e);
-    //     isUpvoted = true;
-    //     voteLabel.innerText = Number(voteLabel.innerText) + 1;
-    //     return;
-    //   } 
-    //   await removeVote(e);
-    //   isUpvoted = false;
-    //   voteLabel.innerText = Number(voteLabel.innerText) - 1;
-    //   return;
-    // }
- 
-
-
-    // const doDownvote = async (e) => {
-    //   const messageId = e.target.attributes['data-id'].value;
-    //   // e.target.classList.add('is-link');
-    //   const url = "{{ url_for('downvote') }}";
-    //   const response = await postData(url, { messageId: messageId });
-    // };
-
-    // const downvote = async (e) => {
-    //   const messageId = e.target.attributes['data-id'].value;
-    //   const voteLabel = document.querySelector(`span[data-id="${messageId}"]`);
-    //   if (isUpvoted) {
-    //     isUpvoted = false;
-    //     voteLabel.innerText = Number(voteLabel.innerText) - 1;
-    //   }
-    //   if (!isDownvoted) {
-    //     await doDownvote(e);
-    //     isDownvoted = true;
-    //     voteLabel.innerText = Number(voteLabel.innerText) - 1;
-    //     return;
-    //   } 
-    //   await removeVote(e);
-    //   isDownvoted = false;
-    //   voteLabel.innerText = Number(voteLabel.innerText) + 1;
-    //   return;
-    // };
-
-    // for (upvoteButton of upvoteButtons) {
-    //   upvoteButton.onclick = upvote;
-    // }
-    // for (downvoteButton of downvoteButtons) {
-    //   downvoteButton.onclick = downvote;
-    // }
-
-  </script>
   </body>
 </html>

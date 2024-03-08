@@ -2,6 +2,7 @@ import sys
 from pool import get_connection
 import tags as tagsModel
 from functools import reduce
+from votes import get_vote, get_uservote
 
 def get_request_insert1() -> str:
     '''
@@ -108,7 +109,7 @@ def get_request_select_one():
     'NATURAL JOIN messages '
     'WHERE question_id=?; ')
 
-def select_one(id) -> tuple:
+def select_one(question_id: int , person_id=None) -> tuple:
     '''
     >>> type(select_one(1))
     <class 'tuple'>
@@ -116,17 +117,19 @@ def select_one(id) -> tuple:
     try:
         conn = get_connection()
         cur = conn.cursor()
-        cur.execute(get_request_select_one(), (id, ))
-        rows = tuple(map(lambda row: {
-            'title': row[0],
-            'text': row[1],
-            'firstname': row[2],
-            'lastname': row[3], 
+        cur.execute(get_request_select_one(), (question_id, ))
+        rows = tuple(map(lambda row: { 'title': row[0], 'text': row[1],
+            'firstname': row[2], 'lastname': row[3], 
             'create_date': row[4]}, cur))
         question = rows[0]
-        cur.execute(tagsModel.get_request_select_where_question(), (id, ))
+        cur.execute(tagsModel.get_request_select_where_question(),
+                    (question_id, ))
         tags = tuple(map(lambda row: row[0], cur))
-        return question, tags
+        vote = get_vote(conn, question_id)
+        if person_id is None:
+            return question, tags, vote, 0
+        uservote = get_uservote(conn, question_id, person_id)
+        return question, tags, vote, uservote
     except Exception as e:
         print(e)
     finally:

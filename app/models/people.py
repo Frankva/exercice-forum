@@ -20,6 +20,17 @@ def get_users():
     conn.close()
     return rows
 
+def get_request_check_password_email():
+    '''
+    >>> type(get_request_check_password_email())
+    <class 'str'>
+    '''
+    return ('SELECT person_id '
+        'FROM emails '
+        'NATURAL JOIN people '
+        'NATURAL JOIN passwords '
+        'WHERE (text=?) AND (hash=sha2(?, 512)); ')
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

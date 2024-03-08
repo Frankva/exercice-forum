@@ -1,16 +1,21 @@
 from .models import questions as questionsModel
 from .models.tags import formatTags
 from .models import tags as tagsModel
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 app = Flask(__name__)
 app.config.from_object('config')
 import sys
 from .models import answers as answersModel
 from .models import votes as votesModel
 
+from flask import session
+
+app.secret_key = app.config['SECRET_KEY']
 
 @app.route('/')
 def index():
+    if 'username' in session:
+        return f'Logged in as {session["username"]}'
     return render_template('index.html')
 
 @app.route('/hello')
@@ -24,14 +29,18 @@ def questions_get():
 
 @app.get('/question/<id>')
 def question_get(id):
-    question, tags = questionsModel.select_one(id)
+    question, tags, vote, uservote = questionsModel.select_one(id, 1)
+    # TODO
+    # above change the 1 when implement session
     
     question['id'] = id
-    answers = answersModel.select(id)
+    answers = answersModel.select(id, 1)
+    # TODO
+    # above change the 1 when implement session
     print(answers, file=sys.stderr)
     print(type(answers), file=sys.stderr)
     return render_template('question.html', question=question, answers=answers,
-                           tags=tags)
+                           tags=tags, vote=vote, uservote=uservote)
 
 @app.post('/question/<int:id>')
 def question_post(id):
@@ -100,3 +109,23 @@ def nullify_vote():
     # TODO
     # above change the 1 when implement session
     return jsonify({"message":"Ok"})
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return render_template('login.html')
+    # return '''
+    #     <form method="post">
+    #         <p><input type=text name=username>
+    #         <p><input type=submit value=Login>
+    #     </form>
+    # '''
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
+

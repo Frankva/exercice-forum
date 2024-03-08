@@ -1,7 +1,8 @@
 import sys
 from pool import get_connection
+from votes import get_vote, get_uservote
 
-def get_request_insert():
+def get_request_insert() -> str:
     '''
     >>> type(get_request_insert())
     <class 'str'>
@@ -10,7 +11,7 @@ def get_request_insert():
         'VALUES '
         '(?, ?); ')
 
-def get_request_message_answer_question():
+def get_request_message_answer_question() -> str:
     '''
     >>> type(get_request_message_answer_question())
     <class 'str'>
@@ -20,7 +21,7 @@ def get_request_message_answer_question():
         '((SELECT max(message_id) '
         '    FROM messages), ?); ')
 
-def insert(text, person_id, question_id):
+def insert(text, person_id, question_id) -> None:
     '''
     >>> type(insert('text', 1, 1))
     <class 'NoneType'>
@@ -37,7 +38,7 @@ def insert(text, person_id, question_id):
     finally:
         conn.close()
 
-def get_request_select():
+def get_request_select() -> str:
     '''
     >>> type(get_request_message_answer_question())
     <class 'str'>
@@ -48,22 +49,31 @@ def get_request_select():
         'NATURAL JOIN people '
         'WHERE question_id = ?; ')
 
-def select(question_id):
+def select(question_id: int, person_id=None) -> tuple:
     '''
     >>> type(select(1))
+    <class 'tuple'>
+    >>> type(select(1, 1))
     <class 'tuple'>
     '''
     try: 
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(get_request_select(), (question_id, ))
-        rows = tuple(map(lambda row: {'message_id': row[0],
-                                      'text': row[1],
-                                      'firstname': row[2],
-                                      'lastname': row[3],
-                                      'create_date': row[4],
-                                      }, cur))
-        return rows
+        rows = tuple(map(lambda row: {'message_id': row[0], 'text': row[1],
+            'firstname': row[2], 'lastname': row[3], 'create_date': row[4], },
+                         cur))
+        def f(row: dict) -> dict:
+            row['vote'] = get_vote(conn, row['message_id'])
+            return row
+        rows_with_vote = tuple(map(f, rows))
+        if person_id is None:
+            return rows_with_vote
+        def f(row: dict) -> dict:
+            row['uservote'] = get_uservote(conn, row['message_id'], person_id)
+            return row
+        rows_with_uservote = tuple(map(f, rows))
+        return rows_with_uservote
     except Exception as e:
         print(e)
     finally:

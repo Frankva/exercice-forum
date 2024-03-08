@@ -3,7 +3,7 @@ start transaction;
 
 INSERT INTO people (firstname, lastname)
 VALUES
-('Bob', 'Maurice');
+('Bob', 'Morice');
 
 
 INSERT INTO questions (title)
@@ -39,3 +39,11 @@ VALUES
 INSERT person_vote_message (is_upvote, person_id, message_id)
 VALUES
 (TRUE, 1, 1);
+
+INSERT emails (text, person_id)
+VALUES
+('bob.morice@email.org', 1);
+
+INSERT passwords (hash, person_id)
+VALUES
+(sha2('a', 512), 1);
