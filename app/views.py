@@ -28,10 +28,8 @@ def questions_get():
 def question_get(id):
     person_id = session['person_id'] if 'person_id' in session else None
     question, tags, vote, uservote = questions_model.select_one(id, person_id)
-    question['id'] = id
+    # question['id'] = id
     answers = answers_model.select(id, person_id)
-    print(answers, file=sys.stderr)
-    print(type(answers), file=sys.stderr)
     return render_template('question.html', question=question, answers=answers,
                            tags=tags, vote=vote, uservote=uservote)
 
@@ -40,7 +38,6 @@ def question_post(id):
     person_id = session['person_id'] if 'person_id' in session else None
     if person_id is None:
         return jsonify({'message':'Error not connected'})
-    print(request.form['answer'], file=sys.stderr)
     answers_model.insert(text=request.form['answer'],
                          person_id=person_id,
                          question_id=id)
@@ -63,9 +60,6 @@ def ask_get():
 
 @app.post('/ask')
 def ask_post():
-    print(request.form['title'])
-    print(request.form['body'])
-    print(request.form['tags'])
     person_id = session['person_id'] if 'person_id' in session else None
     if person_id is None:
         return jsonify({'message':'Error not connected'})
@@ -82,7 +76,6 @@ def tags():
 
 @app.post('/upvote')
 def upvote():
-    print(request.get_json(), file=sys.stderr)
     person_id = session['person_id'] if 'person_id' in session else None
     if person_id is None:
         return jsonify({'message':'Error not connected'})
@@ -94,7 +87,6 @@ def upvote():
 
 @app.post('/downvote')
 def downvote():
-    print(request.get_json(), file=sys.stderr)
     person_id = session['person_id'] if 'person_id' in session else None
     if person_id is None:
         return jsonify({'message':'Error not connected'})
@@ -105,7 +97,6 @@ def downvote():
 
 @app.post('/nullify-vote')
 def nullify_vote():
-    print(request.get_json(), file=sys.stderr)
     person_id = session['person_id'] if 'person_id' in session else None
     if person_id is None:
         return jsonify({'message':'Error not connected'})
@@ -114,7 +105,7 @@ def nullify_vote():
     return jsonify({"message":"Ok"})
 
 @app.post('/login')
-def login():
+def login_post():
     person_id = people_model.get_person_id(request.form['email'],
                                            request.form['password'])
     if person_id is None:
@@ -123,7 +114,7 @@ def login():
     return redirect(url_for('index'))
 
 @app.get('/login')
-def get_login():
+def login_get():
     if 'person_id' in session:
         return redirect(url_for('index'))
     return render_template('login.html')
@@ -133,4 +124,15 @@ def logout():
     # remove the username from the session if it's there
     session.pop('person_id', None)
     return redirect(url_for('index'))
+
+
+@app.get('/signin')
+def signin_get():
+    if 'person_id' in session:
+        return redirect(url_for('index'))
+    return render_template('signin.html')
+
+@app.post('/signin')
+def signin_post():
+    people_model.insert_person(request.form['email'], request.form['password'])
 

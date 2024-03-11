@@ -68,6 +68,21 @@ def get_request_vote() -> str:
     return ('SELECT ( '
         '    SELECT count(person_vote_message_id) '
         '    FROM person_vote_message '
+        '    WHERE (is_upvote=true) AND (message_id=?) '
+        ') - ( '
+        '    SELECT count(person_vote_message_id) '
+        '    FROM person_vote_message '
+        '    WHERE (is_upvote=false) AND (message_id=?) '
+        ') AS vote; ')
+
+def get_request_vote_on_question() -> str:
+    '''
+    >>> type(get_request_vote_on_question())
+    <class 'str'>
+    '''
+    return ('SELECT ( '
+        '    SELECT count(person_vote_message_id) '
+        '    FROM person_vote_message '
         '    NATURAL JOIN question_have_message '
         '    WHERE (is_upvote=true) AND (question_id=?) '
         ') - ( '
@@ -80,6 +95,12 @@ def get_request_vote() -> str:
 def get_vote(conn, message_id) -> int: 
     cur = conn.cursor()
     cur.execute(get_request_vote(), (message_id, message_id))
+    vote = reduce(lambda vote, row: row[0], cur, 0)
+    return vote
+
+def get_vote_on_question(conn, question_id) -> int: 
+    cur = conn.cursor()
+    cur.execute(get_request_vote_on_question(), (question_id, question_id))
     vote = reduce(lambda vote, row: row[0], cur, 0)
     return vote
 
@@ -103,6 +124,15 @@ def get_request_user_vote() -> str:
     '''
     return ('SELECT is_upvote '
         'FROM person_vote_message '
+        'WHERE  (message_id=?) AND (person_id=?); ')
+
+def get_request_user_vote_on_question() -> str:
+    '''
+    >>> type(get_request_user_vote_on_question())
+    <class 'str'>
+    '''
+    return ('SELECT is_upvote '
+        'FROM person_vote_message '
         'NATURAL JOIN question_have_message '
         'WHERE  (question_id=?) AND (person_id=?); ')
 
@@ -114,6 +144,21 @@ def get_uservote(conn, message_id: int, user_id: int) -> int:
     '''
     cur = conn.cursor()
     cur.execute(get_request_user_vote(), (message_id, user_id))
+    vote = reduce(lambda vote, row: row[0], cur, None)
+    if vote == 0:
+        return -1
+    if vote == 1:
+        return 1
+    return 0
+
+def get_uservote_on_question(conn, question_id: int, user_id: int) -> int:
+    '''
+    return 1 is upvote, 0 is no vote, -1 is downvote
+    >>> type(get_uservote_on_question(get_connection(), 1, 1))
+    <class 'int'>
+    '''
+    cur = conn.cursor()
+    cur.execute(get_request_user_vote_on_question(), (question_id, user_id))
     vote = reduce(lambda vote, row: row[0], cur, None)
     if vote == 0:
         return -1

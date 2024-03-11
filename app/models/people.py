@@ -48,6 +48,58 @@ def get_person_id(email: str, password: str) -> int | None:
     finally:
         conn.close()
 
+def get_resquest_insert_password():
+    '''
+    >>> type(get_resquest_insert_password())
+    <class 'str'>
+    '''
+    return ('INSERT passwords (hash, person_id) '
+        'VALUES '
+        '(?, ( '
+        '        SELECT MAX(person_id) '
+        '        FROM people '
+        ')); ')
+
+def get_resquest_insert_email():
+    '''
+    >>> type(get_resquest_insert_email())
+    <class 'str'>
+    '''
+    return ('INSERT emails (text, person_id) '
+        'VALUES '
+        '(?, ( '
+        '        SELECT MAX(person_id) '
+        '        FROM people '
+        ')); ')
+
+def get_resquest_insert_person():
+    '''
+    >>> type(get_resquest_insert_person())
+    <class 'str'>
+    '''
+    return ('INSERT people (firstname, lastname) '
+        'VALUES '
+        '(?, ?); ')
+    
+def insert_person(firstname:str, lastname: str, email: str,
+                  password: str) -> None:
+    '''
+    >>> type(insert_person('firtsname', 'lastname','bob.morice@email.org',
+    ... 'password'))
+    <class 'None'>
+    '''
+    try: 
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_resquest_insert_person(), (firtname, lastname))
+        # TODO
+        rows = tuple(map(lambda row: row[0], cur))
+        return rows[0]
+    except Exception as e:
+        print(e)
+        return None
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     import doctest

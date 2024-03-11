@@ -67,12 +67,14 @@ def select(question_id: int, person_id=None) -> tuple:
             row['vote'] = get_vote(conn, row['message_id'])
             return row
         rows_with_vote = tuple(map(f, rows))
+        sorted_rows_with_vote = reversed(sorted(rows_with_vote,
+                                       key=lambda row: row['vote']))
         if person_id is None:
-            return rows_with_vote
+            return sorted_rows_with_vote
         def f(row: dict) -> dict:
             row['uservote'] = get_uservote(conn, row['message_id'], person_id)
             return row
-        rows_with_uservote = tuple(map(f, rows))
+        rows_with_uservote = tuple(map(f, sorted_rows_with_vote))
         return rows_with_uservote
     except Exception as e:
         print(e)

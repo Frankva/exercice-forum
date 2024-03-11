@@ -2,7 +2,7 @@ import sys
 from pool import get_connection
 import tags as tagsModel
 from functools import reduce
-from votes import get_vote, get_uservote
+from votes import get_vote_on_question, get_uservote_on_question
 
 def get_request_insert1() -> str:
     '''
@@ -124,10 +124,10 @@ def select_one(question_id: int , person_id=None) -> tuple:
         cur.execute(tagsModel.get_request_select_where_question(),
                     (question_id, ))
         tags = tuple(map(lambda row: row[0], cur))
-        vote = get_vote(conn, question_id)
+        vote = get_vote_on_question(conn, question_id)
         if person_id is None:
             return question, tags, vote, None
-        uservote = get_uservote(conn, question_id, person_id)
+        uservote = get_uservote_on_question(conn, question_id, person_id)
         return question, tags, vote, uservote
     except Exception as e:
         print(e)
