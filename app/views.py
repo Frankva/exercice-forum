@@ -19,10 +19,6 @@ def index():
         return f'Logged in as {session["username"]}'
     return render_template('index.html')
 
-@app.route('/hello')
-def hello():
-    return 'Hello, World'
-
 @app.get('/questions')
 def questions_get():
     questions = questions_model.select()
@@ -42,6 +38,8 @@ def question_get(id):
 @app.post('/question/<int:id>')
 def question_post(id):
     person_id = session['person_id'] if 'person_id' in session else None
+    if person_id is None:
+        return jsonify({'message':'Error not connected'})
     print(request.form['answer'], file=sys.stderr)
     answers_model.insert(text=request.form['answer'],
                          person_id=person_id,
@@ -58,6 +56,9 @@ def tagged_questions(tag):
 
 @app.get('/ask')
 def ask_get():
+    person_id = session['person_id'] if 'person_id' in session else None
+    if person_id is None:
+        return redirect(url_for('login'))
     return render_template('ask.html')
 
 @app.post('/ask')
@@ -66,6 +67,8 @@ def ask_post():
     print(request.form['body'])
     print(request.form['tags'])
     person_id = session['person_id'] if 'person_id' in session else None
+    if person_id is None:
+        return jsonify({'message':'Error not connected'})
     questions_model.insert(title=request.form['title'],
                      body=request.form['body'],
                      tags=format_tags(request.form['tags']),
@@ -81,6 +84,8 @@ def tags():
 def upvote():
     print(request.get_json(), file=sys.stderr)
     person_id = session['person_id'] if 'person_id' in session else None
+    if person_id is None:
+        return jsonify({'message':'Error not connected'})
     message_id = request.json['messageId'] 
     votes_model.insert_vote(is_upvote=True, person_id=person_id,
                             message_id=message_id)
@@ -91,6 +96,8 @@ def upvote():
 def downvote():
     print(request.get_json(), file=sys.stderr)
     person_id = session['person_id'] if 'person_id' in session else None
+    if person_id is None:
+        return jsonify({'message':'Error not connected'})
     message_id = request.json['messageId'] 
     votes_model.insert_vote(is_upvote=False, person_id=person_id,
                             message_id=message_id)
@@ -100,6 +107,8 @@ def downvote():
 def nullify_vote():
     print(request.get_json(), file=sys.stderr)
     person_id = session['person_id'] if 'person_id' in session else None
+    if person_id is None:
+        return jsonify({'message':'Error not connected'})
     message_id = request.json['messageId'] 
     votes_model.delete_vote(person_id=person_id, message_id=message_id)
     return jsonify({"message":"Ok"})

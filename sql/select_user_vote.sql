@@ -1,3 +1,4 @@
 SELECT is_upvote
 FROM person_vote_message
-WHERE  (message_id=?) AND (person_id=?);
+NATURAL JOIN question_have_message
+WHERE  (question_id=?) AND (person_id=?);

@@ -68,11 +68,13 @@ def get_request_vote() -> str:
     return ('SELECT ( '
         '    SELECT count(person_vote_message_id) '
         '    FROM person_vote_message '
-        '    WHERE (is_upvote=true) AND (message_id=?) '
+        '    NATURAL JOIN question_have_message '
+        '    WHERE (is_upvote=true) AND (question_id=?) '
         ') - ( '
         '    SELECT count(person_vote_message_id) '
         '    FROM person_vote_message '
-        '    WHERE (is_upvote=false) AND (message_id=?) '
+        '    NATURAL JOIN question_have_message '
+        '    WHERE (is_upvote=false) AND (question_id=?) '
         ') AS vote; ')
 
 def get_vote(conn, message_id) -> int: 
@@ -101,7 +103,8 @@ def get_request_user_vote() -> str:
     '''
     return ('SELECT is_upvote '
         'FROM person_vote_message '
-        'WHERE  (message_id=?) AND (person_id=?); ')
+        'NATURAL JOIN question_have_message '
+        'WHERE  (question_id=?) AND (person_id=?); ')
 
 def get_uservote(conn, message_id: int, user_id: int) -> int:
     '''

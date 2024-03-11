@@ -31,7 +31,7 @@
       <h2 class="title is-2">{{ question.title }}</h2>
       <div class="columns ">
         <aside class="column ">
-          <voting-buttons data-message-id="{{ question.id }}" data-uservote="{{ uservote|default(None) }}"
+          <voting-buttons data-message-id="{{ question.message_id }}" data-uservote="{{ uservote|default(None) }}"
             data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
             data-nullify-url="{{ url_for('nullify_vote') }}" data-vote="{{ vote - uservote|default(0, true) }}"
           ></voting-buttons>
@@ -79,14 +79,14 @@
   </section>
   <section class="section">
     <div class="container">
-      <form method="post">
+      <form method="post" >
         <div class="field">
           <label for="answer" class="label title is-3">Votre réponse</label>
           <div class="control">
-            <textarea id="answer" class="textarea" name="answer"></textarea>
+            <textarea id="answer" class="textarea" name="answer" {{'disabled' if 'person_id' not in session }}></textarea>
           </div>
         </div>
-        <input class="button is-link" type="submit" value="Envoyer">
+        <input class="button is-link" type="submit" value="Envoyer" {{'disabled' if 'person_id' not in session }}>
       </form>
     </div>
   </section>

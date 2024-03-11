@@ -1,9 +1,11 @@
 SELECT (
     SELECT count(person_vote_message_id)
     FROM person_vote_message
-    WHERE (is_upvote=true) AND (message_id=3)
+    NATURAL JOIN question_have_message
+    WHERE (is_upvote=true) AND (question_id=?)
 ) - (
     SELECT count(person_vote_message_id)
     FROM person_vote_message
-    WHERE (is_upvote=false) AND (message_id=3)
+    NATURAL JOIN question_have_message
+    WHERE (is_upvote=false) AND (question_id=?)
 ) AS vote;
