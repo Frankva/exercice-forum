@@ -30,6 +30,13 @@ class VotingButtons extends HTMLElement {
       }
       this.userVote = '-1';
     };
+    if (this.userVote === 'None') {
+      this.disableButtons();
+    }
+  }
+  disableButtons() {
+    this.upvoteButton.disabled = true;
+    this.downvoteButton.disabled = true;
   }
 
   static get observedAttributes() {
@@ -78,21 +85,21 @@ class VotingButtons extends HTMLElement {
     }
   }
 
-  async updateStyle(userVote) {
+updateStyle(userVote) {
     if (userVote === '-1') {
-      const response = await this.postData(this.downvoteUrl,
+      const response = this.postData(this.downvoteUrl,
         { messageId: this.messageId });
       this.labelText = this.noRefreshVotingNumber - 1;
       this.downvoteButton.classList.add('is-link');
       this.upvoteButton.classList.remove('is-link');
     } else if (userVote === '0') {
-      const response = await this.postData(this.nullifyUrl,
+      const response = this.postData(this.nullifyUrl,
         { messageId: this.messageId });
       this.labelText = this.noRefreshVotingNumber;
       this.downvoteButton.classList.remove('is-link');
       this.upvoteButton.classList.remove('is-link');
     } else if (userVote === '1') {
-      const response = await this.postData(this.upvoteUrl,
+      const response = this.postData(this.upvoteUrl,
         { messageId: this.messageId });
       this.labelText = this.noRefreshVotingNumber + 1;
       this.downvoteButton.classList.remove('is-link');

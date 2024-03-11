@@ -127,7 +127,7 @@ def select_one(question_id: int , person_id=None) -> tuple:
         tags = tuple(map(lambda row: row[0], cur))
         vote = get_vote(conn, question_id)
         if person_id is None:
-            return question, tags, vote, 0
+            return question, tags, vote, None
         uservote = get_uservote(conn, question_id, person_id)
         return question, tags, vote, uservote
     except Exception as e:

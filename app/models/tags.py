@@ -36,9 +36,9 @@ def insert(name) -> None:
     finally:
         conn.close()
 
-def formatTags(rawTags: str) -> tuple:
+def format_tags(rawTags: str) -> tuple:
     '''
-    >>> formatTags('a,b;c d d       a')
+    >>> format_tags('a,b;c d d       a')
     ('a', 'b', 'c', 'd')
     '''
     cleanedTags = rawTags.replace(',', ' ')
