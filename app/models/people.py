@@ -55,7 +55,7 @@ def get_resquest_insert_password():
     '''
     return ('INSERT passwords (hash, person_id) '
         'VALUES '
-        '(?, ( '
+        '(sha2(?, 512), ( '
         '        SELECT MAX(person_id) '
         '        FROM people '
         ')); ')
@@ -84,23 +84,26 @@ def get_resquest_insert_person():
 def insert_person(firstname:str, lastname: str, email: str,
                   password: str) -> None:
     '''
-    >>> type(insert_person('firtsname', 'lastname','bob.morice@email.org',
+    >>> type(insert_person('firstsname', 'lastname','bob.morice@email.org',
     ... 'password'))
-    <class 'None'>
+    <class 'NoneType'>
     '''
     try: 
         conn = get_connection()
         cur = conn.cursor()
-        cur.execute(get_resquest_insert_person(), (firtname, lastname))
+        cur.execute(get_resquest_insert_person(), (firstname, lastname))
+        cur.execute(get_resquest_insert_email(), (email, ))
+        cur.execute(get_resquest_insert_password(), (password, ))
         # TODO
-        rows = tuple(map(lambda row: row[0], cur))
-        return rows[0]
+        conn.commit()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
+        conn.rollback()
         return None
     finally:
         conn.close()
 
 if __name__ == "__main__":
     import doctest
+    from pool import get_connection_test as get_connection
     doctest.testmod()

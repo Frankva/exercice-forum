@@ -22,7 +22,7 @@
         {% if 'person_id' in session %}
           <a href="{{ url_for('logout') }}">Déconnexion</a>
         {% else %}
-          <a href="{{ url_for('signin') }}">Inscription</a>
+          <a href="{{ url_for('signin_get') }}">Inscription</a>
           <a href="{{ url_for('login_get') }}">Connexion</a>
         {% endif %}
       </nav>

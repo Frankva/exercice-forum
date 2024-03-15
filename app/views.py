@@ -134,5 +134,6 @@ def signin_get():
 
 @app.post('/signin')
 def signin_post():
-    people_model.insert_person(request.form['email'], request.form['password'])
+    people_model.insert_person(**request.form)
+    return redirect(url_for('login_get'))
 

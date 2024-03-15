@@ -11,7 +11,7 @@ VALUES
 
 INSERT passwords (hash, person_id)
 VALUES
-(?, (
+(sha2(?, 512), (
         SELECT MAX(person_id)
         FROM people
 ));
