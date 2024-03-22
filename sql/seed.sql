@@ -47,3 +47,5 @@ VALUES
 INSERT passwords (hash, person_id)
 VALUES
 (sha2('a', 512), 1);
+
+

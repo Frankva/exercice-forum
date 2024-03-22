@@ -10,6 +10,7 @@ from .models import votes as votes_model
 from .models import people as people_model
 
 from flask import session
+from functools import wraps
 
 app.secret_key = app.config['SECRET_KEY']
 
@@ -33,13 +34,31 @@ def question_get(id):
     return render_template('question.html', question=question, answers=answers,
                            tags=tags, vote=vote, uservote=uservote)
 
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        person_id = session['person_id'] if 'person_id' in session else None
+        if person_id is None:
+            return jsonify({'message':'Error not connected'})
+        return f(*args, **kwargs)
+    return wrapper
+
+def block_autovoting(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        message_id = request.json['messageId'] 
+        person_id = session['person_id']
+        if votes_model.get_is_autovoting_commit(message_id, person_id):
+            return (jsonify({'message':'Error you cannot vote for yourself'}),
+                    400)
+        return f(*args, **kwargs)
+    return wrapper
+
 @app.post('/question/<int:id>')
+@login_required
 def question_post(id):
-    person_id = session['person_id'] if 'person_id' in session else None
-    if person_id is None:
-        return jsonify({'message':'Error not connected'})
     answers_model.insert(text=request.form['answer'],
-                         person_id=person_id,
+                         person_id=session['person_id'],
                          question_id=id)
     
     return question_get(id)
@@ -59,14 +78,12 @@ def ask_get():
     return render_template('ask.html')
 
 @app.post('/ask')
+@login_required
 def ask_post():
-    person_id = session['person_id'] if 'person_id' in session else None
-    if person_id is None:
-        return jsonify({'message':'Error not connected'})
     questions_model.insert(title=request.form['title'],
                      body=request.form['body'],
                      tags=format_tags(request.form['tags']),
-                     user_id=person_id)
+                     user_id=session['person_id'])
     return ask_get()
 
 @app.route('/tags')
@@ -75,33 +92,31 @@ def tags():
     return render_template('tags.html', tags=tags)
 
 @app.post('/upvote')
+@login_required
+@block_autovoting
 def upvote():
-    person_id = session['person_id'] if 'person_id' in session else None
-    if person_id is None:
-        return jsonify({'message':'Error not connected'})
     message_id = request.json['messageId'] 
-    votes_model.insert_vote(is_upvote=True, person_id=person_id,
+    votes_model.insert_vote(is_upvote=True,
+                            person_id=session['person_id'],
                             message_id=message_id)
     return jsonify({"message":"Ok"})
     
 
 @app.post('/downvote')
+@login_required
+@block_autovoting
 def downvote():
-    person_id = session['person_id'] if 'person_id' in session else None
-    if person_id is None:
-        return jsonify({'message':'Error not connected'})
     message_id = request.json['messageId'] 
-    votes_model.insert_vote(is_upvote=False, person_id=person_id,
+    votes_model.insert_vote(is_upvote=False, person_id=session['person_id'],
                             message_id=message_id)
     return jsonify({"message":"Ok"})
 
 @app.post('/nullify-vote')
+@login_required
 def nullify_vote():
-    person_id = session['person_id'] if 'person_id' in session else None
-    if person_id is None:
-        return jsonify({'message':'Error not connected'})
     message_id = request.json['messageId'] 
-    votes_model.delete_vote(person_id=person_id, message_id=message_id)
+    votes_model.delete_vote(person_id=session['person_id'],
+                            message_id=message_id)
     return jsonify({"message":"Ok"})
 
 @app.post('/login')
@@ -109,7 +124,7 @@ def login_post():
     person_id = people_model.get_person_id(request.form['email'],
                                            request.form['password'])
     if person_id is None:
-        return render_template('login.html')
+        return redirect(url_for('login_get'))
     session['person_id'] = person_id
     return redirect(url_for('index'))
 

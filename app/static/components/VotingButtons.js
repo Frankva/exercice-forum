@@ -85,25 +85,49 @@ class VotingButtons extends HTMLElement {
     }
   }
 
-updateStyle(userVote) {
+  async invokeNullify() {
+    const returnCode = 200;
+    const response = await this.postData(this.nullifyUrl,
+      { messageId: this.messageId });
+    if (response.status !== returnCode) {
+      return;
+    }
+    this.labelText = this.noRefreshVotingNumber;
+    this.downvoteButton.classList.remove('is-link');
+    this.upvoteButton.classList.remove('is-link');
+  }
+
+  async invokeUpvote() {
+    const returnCode = 200;
+    const response = await this.postData(this.upvoteUrl,
+      { messageId: this.messageId });
+    if (response.status !== returnCode) {
+      return;
+    }
+    this.labelText = this.noRefreshVotingNumber + 1;
+    this.downvoteButton.classList.remove('is-link');
+    this.upvoteButton.classList.add('is-link');
+  }
+
+  async invokeDownvote() {
+    const returnCode = 200;
+    const response = await this.postData(this.downvoteUrl,
+      { messageId: this.messageId });
+    if (response.status !== returnCode) {
+      return;
+    }
+    this.labelText = this.noRefreshVotingNumber - 1;
+    this.downvoteButton.classList.add('is-link');
+    this.upvoteButton.classList.remove('is-link');
+  }
+
+  async updateStyle(userVote) {
     if (userVote === '-1') {
-      const response = this.postData(this.downvoteUrl,
-        { messageId: this.messageId });
-      this.labelText = this.noRefreshVotingNumber - 1;
-      this.downvoteButton.classList.add('is-link');
-      this.upvoteButton.classList.remove('is-link');
+      this.invokeDownvote();
     } else if (userVote === '0') {
-      const response = this.postData(this.nullifyUrl,
-        { messageId: this.messageId });
-      this.labelText = this.noRefreshVotingNumber;
-      this.downvoteButton.classList.remove('is-link');
-      this.upvoteButton.classList.remove('is-link');
+      this.invokeNullify();
     } else if (userVote === '1') {
-      const response = this.postData(this.upvoteUrl,
-        { messageId: this.messageId });
-      this.labelText = this.noRefreshVotingNumber + 1;
-      this.downvoteButton.classList.remove('is-link');
-      this.upvoteButton.classList.add('is-link');
+      this.invokeUpvote();
     }
   }
 
@@ -120,7 +144,7 @@ updateStyle(userVote) {
       referrerPolicy: "no-referrer",
       body: JSON.stringify(data),
     });
-    return response.json();
+    return response;
   }
 
 }

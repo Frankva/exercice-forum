@@ -166,6 +166,51 @@ def get_uservote_on_question(conn, question_id: int, user_id: int) -> int:
         return 1
     return 0
 
+def get_request_is_autovoting() -> str:
+    '''
+    >>> type(get_request_is_autovoting())
+    <class 'str'>
+    '''
+    return ('SELECT person_id '
+        'FROM messages '
+        'WHERE (message_id=?) AND (person_id=?); ')
+
+def get_is_autovoting(conn, message_id, person_id) -> bool:
+    '''
+    >>> get_is_autovoting(get_connection(), 1, 1)
+    True
+    >>> get_is_autovoting(get_connection(), 99, 99)
+    False
+    '''
+    try: 
+        cur = conn.cursor()
+        cur.execute(get_request_is_autovoting(), (message_id, person_id))
+        rows = tuple(map(lambda row: {'id': row[0]}, cur))
+        is_autovoting = rows[0]['id']
+        return True
+    except IndexError as e:
+        return False
+
+def get_is_autovoting_commit(message_id, person_id) -> bool:
+    '''
+    >>> get_is_autovoting_commit(1, 1)
+    True
+    >>> get_is_autovoting_commit(99, 99)
+    False
+    '''
+    try:
+        conn = get_connection()
+        return get_is_autovoting(conn, message_id, person_id)
+    except Excepiton as e: 
+        print(e, file=sys.stderr)
+        conn.rollback()
+    finally: 
+        conn.commit()
+
+
+    
+
+
 
 if __name__ == "__main__":
     import doctest
