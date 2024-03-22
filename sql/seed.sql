@@ -48,4 +48,12 @@ INSERT passwords (hash, person_id)
 VALUES
 (sha2('a', 512), 1);
 
+INSERT authorization_groups (name)
+VALUES
+('formateur'),
+('apprenti');
+
+INSERT person_belong_group (person_id, authorization_group_id)
+VALUES
+(1, 2);
 

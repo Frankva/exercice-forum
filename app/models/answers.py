@@ -43,10 +43,12 @@ def get_request_select() -> str:
     >>> type(get_request_message_answer_question())
     <class 'str'>
     '''
-    return ('SELECT message_id, text, firstname, lastname, create_date '
+    return ('SELECT message_id, text, firstname, lastname, create_date, name '
         'FROM messages '
         'NATURAL JOIN message_answer_question '
         'NATURAL JOIN people '
+        'NATURAL JOIN person_belong_group '
+        'NATURAL JOIN authorization_groups '
         'WHERE question_id = ?; ')
 
 def select(question_id: int, person_id=None) -> tuple:
@@ -61,14 +63,14 @@ def select(question_id: int, person_id=None) -> tuple:
         cur = conn.cursor()
         cur.execute(get_request_select(), (question_id, ))
         rows = tuple(map(lambda row: {'message_id': row[0], 'text': row[1],
-            'firstname': row[2], 'lastname': row[3], 'create_date': row[4], },
-                         cur))
+                'firstname': row[2], 'lastname': row[3],
+                'create_date': row[4], 'group': row[5]}, cur))
         def f(row: dict) -> dict:
             row['vote'] = get_vote(conn, row['message_id'])
             return row
         rows_with_vote = tuple(map(f, rows))
-        sorted_rows_with_vote = reversed(sorted(rows_with_vote,
-                                       key=lambda row: row['vote']))
+        sorted_rows_with_vote = tuple(reversed(sorted(rows_with_vote,
+                                       key=lambda row: row['vote'])))
         if person_id is None:
             return sorted_rows_with_vote
         def f(row: dict) -> dict:
@@ -77,7 +79,7 @@ def select(question_id: int, person_id=None) -> tuple:
         rows_with_uservote = tuple(map(f, sorted_rows_with_vote))
         return rows_with_uservote
     except Exception as e:
-        print(e)
+        raise e
     finally:
         conn.close()
 

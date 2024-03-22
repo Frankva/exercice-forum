@@ -145,11 +145,14 @@ def get_request_select_one():
     >>> type(get_request_select_one())
     <class 'str'>
     '''
-    return ('SELECT title, text, firstname, lastname, create_date, message_id '
+    return ('SELECT title, text, firstname, lastname, create_date, '
+        '    message_id, name '
         'FROM questions '
         'NATURAL JOIN people '
         'NATURAL JOIN question_have_message '
         'NATURAL JOIN messages '
+        'NATURAL JOIN person_belong_group '
+        'NATURAL JOIN authorization_groups '
         'WHERE question_id=?; ')
 
 def select_one(question_id: int , person_id=None) -> tuple:
@@ -162,8 +165,8 @@ def select_one(question_id: int , person_id=None) -> tuple:
         cur = conn.cursor()
         cur.execute(get_request_select_one(), (question_id, ))
         rows = tuple(map(lambda row: { 'title': row[0], 'text': row[1],
-            'firstname': row[2], 'lastname': row[3], 'create_date': row[4],
-            'message_id': row[5] }, cur))
+                'firstname': row[2], 'lastname': row[3], 'create_date': row[4],
+                'message_id': row[5], 'group': row[6] }, cur))
         question = rows[0]
         cur.execute(tagsModel.get_request_select_where_question(),
                     (question_id, ))
@@ -174,7 +177,7 @@ def select_one(question_id: int , person_id=None) -> tuple:
         uservote = get_uservote_on_question(conn, question_id, person_id)
         return question, tags, vote, uservote
     except Exception as e:
-        print(e)
+        raise e
     finally:
         conn.close()
 

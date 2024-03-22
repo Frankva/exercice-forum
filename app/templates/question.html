@@ -44,7 +44,7 @@
           <footer>
             <small>
               <p>Demandé le {{ question.create_date }}</p>
-              <p><strong>{{ question.firstname }} {{ question.lastname }}</strong></p>
+              <p><strong>{{ question.firstname }} {{ question.lastname }}</strong> {{ question.group }}</p>
             </small>
           </footer>
         </div>
@@ -68,7 +68,7 @@
               <footer>
                 <small>
                   <p>Répondu le {{ answer.create_date }}</p>
-                  <p><strong>{{ answer.firstname }} {{ answer.lastname }}</strong></p>
+                  <p><strong>{{ answer.firstname }} {{ answer.lastname }}</strong> {{answer.group}}</p>
                 </small>
               </footer>
             </div>
