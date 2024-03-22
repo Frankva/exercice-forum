@@ -20,9 +20,13 @@ def index():
         return f'Logged in as {session["username"]}'
     return render_template('index.html')
 
-@app.get('/questions')
-def questions_get():
-    questions = questions_model.select()
+@app.get('/questions/')
+@app.get('/questions/<tab>')
+def questions_get(tab='Newest'):
+    if tab == 'Newest':
+        questions = questions_model.select()
+    elif tab == 'Votes':
+        questions = questions_model.select_order_by_vote()
     return render_template('questions.html', questions=questions)
 
 @app.get('/question/<id>')

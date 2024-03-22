@@ -2,7 +2,7 @@ import sys
 from pool import get_connection
 import tags as tagsModel
 from functools import reduce
-from votes import get_vote_on_question, get_uservote_on_question
+from votes import get_vote_on_question, get_uservote_on_question, get_vote
 
 def get_request_insert1() -> str:
     '''
@@ -43,6 +43,15 @@ def get_request_insert4() -> str:
         '        (SELECT tag_id FROM tags WHERE name=?)); ')
 
 
+def get_request_select() -> str:
+    '''
+    >>> type(get_request_select())
+    <class 'str'>
+    '''
+    return ('SELECT question_id, title '
+        'FROM questions '
+        'ORDER BY question_id DESC; ')
+
 def insert(title: str, body: str, tags: tuple, user_id) -> None:
     '''
     >>> type(insert('titre question', 'corps message', ('tag1', 'tag2'), 1))
@@ -71,13 +80,18 @@ def insert(title: str, body: str, tags: tuple, user_id) -> None:
     finally:
         conn.close()
 
-def get_request_select() -> str:
+
+def select_no_commit(conn):
     '''
-    >>> type(get_request_select())
-    <class 'str'>
+    >>> type(select_no_commit(get_connection()))
+    <class 'tuple'>
     '''
-    return ('SELECT question_id, title '
-        'FROM questions; ')
+    cur = conn.cursor()
+    cur.execute(get_request_select())
+    rows = tuple(map(lambda row: {'question_id': row[0],
+                                  'title': row[1]}, cur))
+    return rows
+
 
 def select() -> tuple:
     '''
@@ -86,19 +100,49 @@ def select() -> tuple:
     '''
     try:
         conn = get_connection()
-        cur = conn.cursor()
-        cur.execute(get_request_select())
-        rows = tuple(map(lambda row: {'question_id': row[0],
-                                             'title': row[1]}, cur))
-        return rows
+        return select_no_commit(conn)
     except Exception as e:
         print(e)
     finally:
         conn.close()
 
+def get_request_select_with_message_id() -> str:
+    '''
+    >>> type(get_request_select_with_message_id())
+    <class 'str'>
+    '''
+    return ('SELECT question_id, title, message_id '
+        'FROM questions '
+        'NATURAL JOIN question_have_message; ')
+
+def select_order_by_vote() -> tuple:
+    '''
+    >>> type(select_order_by_vote())
+    <class 'tuple'>
+    '''
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_select_with_message_id())
+        rows = tuple(map(lambda row: {'question_id': row[0],
+                                      'title': row[1],
+                                      'message_id': row[2]}, cur))
+        def f(row: dict) -> dict:
+            row['vote'] = get_vote(conn, row['message_id'])
+            return row
+        rows_with_vote = tuple(map(f, rows))
+        sorted_rows_with_vote = tuple(reversed(sorted(
+            rows_with_vote, key=lambda row: row['vote'])))
+        return sorted_rows_with_vote
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
+
 def get_request_select_one():
     '''
-    >>> type(get_request_select())
+    >>> type(get_request_select_one())
     <class 'str'>
     '''
     return ('SELECT title, text, firstname, lastname, create_date, message_id '
