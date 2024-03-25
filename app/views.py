@@ -78,7 +78,7 @@ def tagged_questions(tag):
 def ask_get():
     person_id = session['person_id'] if 'person_id' in session else None
     if person_id is None:
-        return redirect(url_for('login'))
+        return redirect(url_for('login_get'))
     return render_template('ask.html')
 
 @app.post('/ask')

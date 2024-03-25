@@ -4,8 +4,8 @@ class VotingButtons extends HTMLElement {
     super();
     this.innerHTML = `
     <button class="button" value="upvote">+</button>
-    <div>
-      <span class="tag is-large is-white has-text-centered">0</span>
+    <div class="has-text-centered">
+      <span class=" is-size-4 ">0</span>
     </div>
     <button class="button" value="downvote">−</button> `
     this.label = this.querySelector('span')

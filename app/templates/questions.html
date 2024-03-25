@@ -1,33 +1,17 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block title %}Questions{% endblock %}
+{% block body %}
   <section class="section">
     <div class="container">
-      <h1 class="title is-1">
-        Hello World
-      </h1>
-      <p class="subtitle">
-        My first website with <strong>Bulma</strong>!
-      </p>
+      <h2 class="title">Liste des questions</h2>
     </div>
-  </section>
-  <section class="section">
-    <a href="{{ url_for('questions_get', tab='Newest') }}">Plus récent</a>
-    <a href="{{ url_for('questions_get', tab='Votes') }}">Plus voté</a>
+    <nav class="container has-text-right">
+      <a href="{{ url_for('questions_get', tab='Newest') }}">Plus récent </a>/
+      <a href="{{ url_for('questions_get', tab='Votes') }}"> Plus voté</a>
+    </nav>
     {% for question in questions %}
       <div class="container block">
         <a class="is-size-2"href="{{ url_for('question_get', id=question.question_id)}}">{{ question.title }}</a>
       </div>
     {% endfor %}
-      <div class="container">
-        <a href="{{ url_for('index') }}" class="button is-link is-light">Retour</a>
-      </div>
-  </section>
-  </body>
-</html>
+{% endblock %}
