@@ -146,13 +146,13 @@ def get_request_select_one():
     <class 'str'>
     '''
     return ('SELECT title, text, firstname, lastname, create_date, '
-        '    message_id, name '
+        '    message_id, COALESCE(name, \'\') '
         'FROM questions '
         'NATURAL JOIN people '
         'NATURAL JOIN question_have_message '
         'NATURAL JOIN messages '
-        'NATURAL JOIN person_belong_group '
-        'NATURAL JOIN authorization_groups '
+        'NATURAL LEFT JOIN person_belong_group '
+        'NATURAL LEFT JOIN authorization_groups '
         'WHERE question_id=?; ')
 
 def select_one(question_id: int , person_id=None) -> tuple:
