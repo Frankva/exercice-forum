@@ -130,6 +130,7 @@ def login_post():
     if person_id is None:
         return redirect(url_for('login_get'))
     session['person_id'] = person_id
+    session['email'] = request.form['email']
     return redirect(url_for('index'))
 
 @app.get('/login')
