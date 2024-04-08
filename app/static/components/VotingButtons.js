@@ -3,11 +3,11 @@ class VotingButtons extends HTMLElement {
   constructor() {
     super();
     this.innerHTML = `
-    <button class="button" value="upvote">+</button>
+    <button class="button is-fullwidth" value="upvote">+</button>
     <div class="has-text-centered">
       <span class=" is-size-4 ">0</span>
     </div>
-    <button class="button" value="downvote">−</button> `
+    <button class="button is-fullwidth" value="downvote">−</button> `
     this.label = this.querySelector('span')
     // this.noRefreshVotingNumber = Number(this.label.innerText);
     this.noRefreshVotingNumber = Number(this.vote);

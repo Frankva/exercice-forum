@@ -9,24 +9,26 @@
   <section class="section">
     <div class="container block">
       <h2 class="title is-2">{{ question.title }}</h2>
-      <div class="columns ">
-        <aside class="column ">
-          <voting-buttons data-message-id="{{ question.message_id }}" data-uservote="{{ uservote|default(None) }}"
-            data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
-            data-nullify-url="{{ url_for('nullify_vote') }}" data-vote="{{ vote - uservote|default(0, true) }}"
-          ></voting-buttons>
-        </aside>
-        <div class="column is-full">
-          <p class="content">{{ question.text }}</p>
-          {% for tag in tags %}
-          <a class="tag" href="{{ url_for('tagged_questions', tag=tag) }}">{{ tag }}</a>
-          {% endfor %}
-          <footer>
-            <small>
-              <p>Demandé le {{ question.create_date }}</p>
-              <p><strong>{{ question.firstname }} {{ question.lastname }}</strong> {{ question.group }}</p>
-            </small>
-          </footer>
+      <div class="fixed-grid has-12-cols">
+        <div class="grid ">
+          <aside class="cell">
+            <voting-buttons data-message-id="{{ question.message_id }}" data-uservote="{{ uservote|default(None) }}"
+              data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
+              data-nullify-url="{{ url_for('nullify_vote') }}" data-vote="{{ vote - uservote|default(0, true) }}"
+            ></voting-buttons>
+          </aside>
+          <div class="cell is-col-span-11">
+            <p class="content">{{ question.text }}</p>
+            {% for tag in tags %}
+            <a class="tag" href="{{ url_for('tagged_questions', tag=tag) }}">{{ tag }}</a>
+            {% endfor %}
+            <footer>
+              <small>
+                <p>Demandé le {{ question.create_date }}</p>
+                <p><strong>{{ question.firstname }} {{ question.lastname }}</strong> {{ question.group }}</p>
+              </small>
+            </footer>
+          </div>
         </div>
       </div>
     </div>
@@ -35,15 +37,15 @@
     <div class="container">
       <h3 class="title is-3">Réponses</h3>
       {% for answer in answers %}
-        <article class="box">
-          <div class="columns">
-            <aside class="column">
+        <article class="box fixed-grid has-12-cols">
+          <div class="grid">
+            <aside class="cell">
               <voting-buttons data-message-id="{{ answer.message_id }}" data-uservote="{{ answer.uservote|default(None) }}"
                 data-upvote-url="{{ url_for('upvote') }}" data-downvote-url="{{ url_for('downvote') }}"
                 data-nullify-url="{{ url_for('nullify_vote') }}" data-vote="{{ answer.vote - answer.uservote|default(0) }}"
               ></voting-buttons>
             </aside>
-            <div class="column is-full">
+            <div class="cell is-col-span-11">
               <p class="content">{{ answer.text }}</p>
               <footer>
                 <small>
