@@ -124,16 +124,7 @@ def select_order_by_vote() -> tuple:
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(get_request_select_with_message_id())
-        rows = tuple(map(lambda row: {'question_id': row[0],
-                                      'title': row[1],
-                                      'message_id': row[2]}, cur))
-        def f(row: dict) -> dict:
-            row['vote'] = get_vote(conn, row['message_id'])
-            return row
-        rows_with_vote = tuple(map(f, rows))
-        sorted_rows_with_vote = tuple(reversed(sorted(
-            rows_with_vote, key=lambda row: row['vote'])))
-        return sorted_rows_with_vote
+        return get_sorted_row_with_vote(cur)
     except Exception as e:
         print(e)
     finally:
@@ -186,12 +177,12 @@ def get_request_select_where_tag() -> str:
     >>> type(get_request_select_where_tag())
     <class 'str'>
     '''
-
     return ('SELECT question_id, title '
         'FROM questions '
         'NATURAL JOIN question_have_tag '
         'NATURAL JOIN tags '
-        'WHERE name=?; ')
+        'WHERE name=? '
+        'ORDER BY question_id DESC; ')
 
 def select_where_tag(tag) -> tuple:
     '''
@@ -209,6 +200,48 @@ def select_where_tag(tag) -> tuple:
         print(e)
     finally:
         conn.close()
+
+
+def select_where_tag_with_message_id() -> tuple:
+    '''
+    >>> type(select_where_tag_with_message_id())
+    <class 'str'>
+    '''
+    return ('SELECT question_id, title, message_id '
+        'FROM questions '
+        'NATURAL JOIN question_have_tag '
+        'NATURAL JOIN tags '
+        'NATURAL JOIN question_have_message '
+        'WHERE name=?; ')
+
+def get_sorted_row_with_vote(cur) -> tuple: 
+    conn = cur.connection
+    rows = tuple(map(lambda row: {'question_id': row[0],
+                                  'title': row[1],
+                                  'message_id': row[2]}, cur))
+    def f(row: dict) -> dict:
+        row['vote'] = get_vote(conn, row['message_id'])
+        return row
+    rows_with_vote = tuple(map(f, rows))
+    sorted_rows_with_vote = tuple(reversed(sorted(
+        rows_with_vote, key=lambda row: row['vote'])))
+    return sorted_rows_with_vote
+
+def select_where_tag_order_by_vote(tag) -> tuple:
+    '''
+    >>> type(select_where_tag_order_by_vote('tag_name'))
+    <class 'tuple'>
+    '''
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(select_where_tag_with_message_id(), (tag, ))
+        return get_sorted_row_with_vote(cur)
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
 
 if __name__ == "__main__":
     import doctest

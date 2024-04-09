@@ -6,8 +6,8 @@
       <h2 class="title">Liste des questions</h2>
     </div>
     <nav class="container has-text-right">
-      <a href="{{ url_for('questions_get', tab='Newest') }}">Plus récent </a>/
-      <a href="{{ url_for('questions_get', tab='Votes') }}"> Plus voté</a>
+      <a href="{{ request.url + '/../Newest' }}">Plus récent </a>/
+      <a href="{{ request.url + '/../Votes' }}"> Plus voté</a>
     </nav>
     {% for question in questions %}
       <div class="container block">

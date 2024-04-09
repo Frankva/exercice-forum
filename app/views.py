@@ -68,8 +68,14 @@ def question_post(id):
     return question_get(id)
 
 @app.route('/questions/tagged/<tag>')
-def tagged_questions(tag):
-    questions = questions_model.select_where_tag(tag)
+@app.route('/questions/tagged/<tag>/<tab>')
+def tagged_questions(tag, tab=None):
+    if tab is None:
+        return redirect(url_for('tagged_questions', tag=tag, tab='Newest'))
+    if tab == 'Newest':
+        questions = questions_model.select_where_tag(tag)
+    elif tab == 'Votes':
+        questions = questions_model.select_where_tag_order_by_vote(tag)
     return render_template('questions.html', questions=questions)
 
     
