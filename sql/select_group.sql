@@ -1,4 +1,4 @@
 SELECT name
 FROM authorization_groups
-NATURAL JOIN people
+NATURAL JOIN person_belong_group
 WHERE person_id=?;

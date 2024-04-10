@@ -137,14 +137,15 @@ def get_request_select_one():
     <class 'str'>
     '''
     return ('SELECT title, text, firstname, lastname, create_date, '
-        '    message_id, COALESCE(name, \'\') '
+        '    message_id, COALESCE(GROUP_CONCAT(name), \'\') AS \'group\' '
         'FROM questions '
         'NATURAL JOIN people '
         'NATURAL JOIN question_have_message '
         'NATURAL JOIN messages '
         'NATURAL LEFT JOIN person_belong_group '
         'NATURAL LEFT JOIN authorization_groups '
-        'WHERE question_id=?; ')
+        'WHERE question_id=? '
+        'GROUP BY message_id, text, firstname, lastname, create_date; ')
 
 def select_one(question_id: int , person_id=None) -> tuple:
     '''

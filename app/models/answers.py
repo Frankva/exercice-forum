@@ -44,13 +44,14 @@ def get_request_select() -> str:
     <class 'str'>
     '''
     return ('SELECT message_id, text, firstname, lastname, create_date, '
-        '    COALESCE(name, \'\') '
+        '    COALESCE(GROUP_CONCAT(name), \'\') AS \'group\' '
         'FROM messages '
         'NATURAL JOIN message_answer_question '
         'NATURAL JOIN people '
         'NATURAL LEFT JOIN person_belong_group '
         'NATURAL LEFT JOIN authorization_groups '
-        'WHERE question_id = ?; ')
+        'WHERE question_id=? '
+        'GROUP BY message_id, text, firstname, lastname, create_date; ')
 
 def select(question_id: int, person_id=None) -> tuple:
     '''

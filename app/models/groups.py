@@ -8,7 +8,7 @@ def get_request_select():
     '''
     return ('SELECT name '
         'FROM authorization_groups '
-        'NATURAL JOIN people '
+        'NATURAL JOIN person_belong_group '
         'WHERE person_id=?; ')
 
 def select(person_id: int) -> str:
