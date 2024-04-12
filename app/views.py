@@ -180,11 +180,13 @@ def admin():
     def f(user):
         user['actions'] = ({'label': 'Voir les messages',
                'url': url_for('admin_person_message',
-                              person_id=user['person_id'])}, )
+               person_id=user['person_id'])},
+               {'label': 'Voir titres des questions',
+               'url': url_for('admin_person_title',
+                              person_id=user['person_id'])})
         return user
     users_with_actions = tuple(map(f, users))
-    return render_template('admin.html', data_list=users, title='personnes',
-            id_str='person_id')
+    return render_template('admin.html', data_list=users, title='personnes')
 
 @app.get('/admin/<person_id>')
 @login_required
@@ -198,12 +200,33 @@ def admin_person_message(person_id: int):
         return message
     messages_with_actions = tuple(map(f, messages))
     return render_template('admin.html', data_list=messages_with_actions,
-                           title='messages', id_str='message_id')
+                           title='messages')
 
 @app.get('/admin/<person_id>/<message_id>')
 @login_required
 @admin_required
 def admin_person_message_nullify(person_id: int, message_id: int):
-    messages = messages_model.nullify_message(message_id)
+    messages_model.nullify_message(message_id)
     return redirect(url_for('admin_person_message', person_id=person_id))
 
+@app.get('/admin/titles/<person_id>')
+@login_required
+@admin_required
+def admin_person_title(person_id: int):
+    # TODO
+    questions = questions_model.select_where_person(person_id)
+    def f(question):
+        question['actions'] = ({'label': 'Nullifier',
+                'url': url_for('admin_person_title_nullify',
+                person_id=person_id, question_id=question['question_id'])}, )
+        return question
+    questions_with_actions = tuple(map(f, questions))
+    return render_template('admin.html', data_list=questions_with_actions,
+                           title='Titres des questions')
+
+@app.get('/admin/titles/<person_id>/<question_id>')
+@login_required
+@admin_required
+def admin_person_title_nullify(person_id: int, question_id: int):
+    questions_model.nullify_title(question_id)
+    return redirect(url_for('admin_person_title', person_id=person_id))

@@ -243,6 +243,54 @@ def select_where_tag_order_by_vote(tag) -> tuple:
     finally:
         conn.close()
 
+def get_request_select_where_person() -> str:
+    '''
+    >>> type(get_request_select_where_person())
+    <class 'str'>
+    '''
+    return ('SELECT question_id, title '
+        'FROM questions '
+        'NATURAL JOIN question_have_message '
+        'NATURAL JOIN messages '
+        'WHERE person_id=?; ')
+
+def select_where_person(person_id: int) -> tuple:
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_select_where_person(), (person_id, ))
+        rows = tuple(map(lambda row: {'question_id': row[0],
+                                             'title': row[1]}, cur))
+        return rows
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
+def get_request_nullify_title() -> str:
+    '''
+    >>> type(get_request_nullify_title())
+    <class 'str'>
+    '''
+    return ('UPDATE questions SET title = NULL '
+        'WHERE question_id = ?; ')
+
+def nullify_title(question_id: int) -> None:
+    '''
+    >>> type(nullify_title(2))
+    <class 'NoneType'>
+    '''
+    try: 
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_nullify_title(), (question_id, ))
+        conn.commit()
+    except Exception as e:
+        print(e)
+        conn.rollback()
+    finally:
+        conn.close()
+
 
 if __name__ == "__main__":
     import doctest

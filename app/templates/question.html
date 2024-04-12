@@ -8,7 +8,11 @@
 {% block body %}
   <section class="section">
     <div class="container block">
+      {% if question.title %}
       <h2 class="title is-2">{{ question.title }}</h2>
+      {% else %}
+      <h2 class="title is-7">Titre supprimé par un administrateur.</h2>
+      {% endif %}
       <div class="fixed-grid has-12-cols">
         <div class="grid ">
           <aside class="cell">

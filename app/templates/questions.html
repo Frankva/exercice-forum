@@ -11,7 +11,11 @@
     </nav>
     {% for question in questions %}
       <div class="container block">
+      {% if question.title %}
         <a class="is-size-2"href="{{ url_for('question_get', id=question.question_id)}}">{{ question.title }}</a>
+      {% else %}
+        <a class="is-size-7"href="{{ url_for('question_get', id=question.question_id)}}">Le titre supprimé par un administrateur.</a>
+      {% endif %}
       </div>
     {% endfor %}
   </section>
