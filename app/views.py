@@ -177,16 +177,28 @@ def admin_required(f):
 @admin_required
 def admin():
     users = people_model.select_people()
-    return render_template('admin.html', data=users, title='personnes',
-            id_str='person_id', action_label='Voir les messages')
+    def f(user):
+        user['actions'] = ({'label': 'Voir les messages',
+               'url': url_for('admin_person_message',
+                              person_id=user['person_id'])}, )
+        return user
+    users_with_actions = tuple(map(f, users))
+    return render_template('admin.html', data_list=users, title='personnes',
+            id_str='person_id')
 
 @app.get('/admin/<person_id>')
 @login_required
 @admin_required
 def admin_person_message(person_id: int):
     messages = messages_model.select_person_messages(person_id)
-    return render_template('admin.html', data=messages, title='messages',
-            id_str='message_id', action_label='Nullifier')
+    def f(message):
+        message['actions'] = ({'label': 'Nullifier',
+                'url': url_for('admin_person_message_nullify',
+                person_id=person_id, message_id=message['message_id'])}, )
+        return message
+    messages_with_actions = tuple(map(f, messages))
+    return render_template('admin.html', data_list=messages_with_actions,
+                           title='messages', id_str='message_id')
 
 @app.get('/admin/<person_id>/<message_id>')
 @login_required
