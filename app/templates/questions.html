@@ -14,7 +14,7 @@
       {% if question.title %}
         <a class="is-size-2"href="{{ url_for('question_get', id=question.question_id)}}">{{ question.title }}</a>
       {% else %}
-        <a class="is-size-2"href="{{ url_for('question_get', id=question.question_id)}}"><em>Le titre supprimé par un administrateur.</em></a>
+        <a class="is-size-2"href="{{ url_for('question_get', id=question.question_id)}}"><em>Titre supprimé par un administrateur.</em></a>
       {% endif %}
       </div>
     {% endfor %}
