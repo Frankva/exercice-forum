@@ -18,7 +18,11 @@
             ></voting-buttons>
           </aside>
           <div class="cell is-col-span-11">
+            {% if question.text %}
             <p class="content">{{ question.text }}</p>
+            {% else %}
+            <p class="content"><strong>Message supprimé par un administrateur.</strong></p>
+            {% endif %}
             {% for tag in tags %}
             <a class="tag" href="{{ url_for('tagged_questions', tag=tag) }}">{{ tag }}</a>
             {% endfor %}
@@ -46,7 +50,11 @@
               ></voting-buttons>
             </aside>
             <div class="cell is-col-span-11">
+            {% if answer.text %}
               <p class="content">{{ answer.text }}</p>
+            {% else %}
+            <p class="content"><strong>Message supprimé par un administrateur.</strong></p>
+            {% endif %}
               <footer>
                 <small>
                   <p>Répondu le {{ answer.create_date }}</p>

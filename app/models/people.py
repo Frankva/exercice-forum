@@ -5,20 +5,28 @@ def get_request_select() -> str:
     >>> type(get_request_select())
     <class 'str'>
     '''
-    return ('SELECT *'
-        'FROM people')
+    return ('SELECT person_id, firstname, lastname '
+        'FROM people; ')
 
-def get_users():
+def select_people():
     '''
-    >>> type(get_users())
+    >>> type(select_people())
     <class 'tuple'>
     '''
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(get_request_select())
-    rows = cur.fetchone()
-    conn.close()
-    return rows
+    try: 
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(get_request_select())
+        rows = tuple(map(lambda row: {'person_id': row[0],
+                                      'firstname': row[1],
+                                      'lastname': row[2]}, cur))
+        
+        return rows
+    except Exception as e:
+        print(e)
+        return None
+    finally:
+        conn.close()
 
 def get_request_check_password_email():
     '''

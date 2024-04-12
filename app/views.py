@@ -1,13 +1,15 @@
 from .models import questions as questions_model
 from .models.tags import format_tags
 from .models import tags as tags_model
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 app.config.from_object('config')
 import sys
 from .models import answers as answers_model
 from .models import votes as votes_model
 from .models import people as people_model
+from .models import groups as groups_model
+from .models import messages as messages_model
 
 from flask import session
 from functools import wraps
@@ -43,7 +45,7 @@ def login_required(f):
     def wrapper(*args, **kwargs):
         person_id = session['person_id'] if 'person_id' in session else None
         if person_id is None:
-            return jsonify({'message':'Error not connected'})
+            return {'message':'Error not connected'}, 401
         return f(*args, **kwargs)
     return wrapper
 
@@ -53,8 +55,7 @@ def block_autovoting(f):
         message_id = request.json['messageId'] 
         person_id = session['person_id']
         if votes_model.get_is_autovoting_commit(message_id, person_id):
-            return (jsonify({'message':'Error you cannot vote for yourself'}),
-                    400)
+            return {'message':'Error you cannot vote for yourself'}, 400
         return f(*args, **kwargs)
     return wrapper
 
@@ -109,7 +110,7 @@ def upvote():
     votes_model.insert_vote(is_upvote=True,
                             person_id=session['person_id'],
                             message_id=message_id)
-    return jsonify({"message":"Ok"})
+    return {"message":"Ok"}
     
 
 @app.post('/downvote')
@@ -119,7 +120,7 @@ def downvote():
     message_id = request.json['messageId'] 
     votes_model.insert_vote(is_upvote=False, person_id=session['person_id'],
                             message_id=message_id)
-    return jsonify({"message":"Ok"})
+    return {"message":"Ok"}
 
 @app.post('/nullify-vote')
 @login_required
@@ -127,7 +128,7 @@ def nullify_vote():
     message_id = request.json['messageId'] 
     votes_model.delete_vote(person_id=session['person_id'],
                             message_id=message_id)
-    return jsonify({"message":"Ok"})
+    return {"message":"Ok"}
 
 @app.post('/login')
 def login_post():
@@ -162,4 +163,35 @@ def signin_get():
 def signin_post():
     people_model.insert_person(**request.form)
     return redirect(url_for('login_get'))
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not groups_model.is_admin(session['person_id']):
+            return {'message':'Error not authorised'}, 401
+        return f(*args, **kwargs)
+    return wrapper
+
+@app.get('/admin')
+@login_required
+@admin_required
+def admin():
+    users = people_model.select_people()
+    return render_template('admin.html', data=users, title='personnes',
+            id_str='person_id', action_label='Voir les messages')
+
+@app.get('/admin/<person_id>')
+@login_required
+@admin_required
+def admin_person_message(person_id: int):
+    messages = messages_model.select_person_messages(person_id)
+    return render_template('admin.html', data=messages, title='messages',
+            id_str='message_id', action_label='Nullifier')
+
+@app.get('/admin/<person_id>/<message_id>')
+@login_required
+@admin_required
+def admin_person_message_nullify(person_id: int, message_id: int):
+    messages = messages_model.nullify_message(message_id)
+    return redirect(url_for('admin_person_message', person_id=person_id))
 

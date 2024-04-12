@@ -10,4 +10,5 @@ A site where you can :
 
 * Flask Python
 * Bulma CSS
+* Pico CSS
 

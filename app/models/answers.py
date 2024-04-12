@@ -21,7 +21,7 @@ def get_request_message_answer_question() -> str:
         '((SELECT max(message_id) '
         '    FROM messages), ?); ')
 
-def insert(text, person_id, question_id) -> None:
+def insert(text: str, person_id: int, question_id: int) -> None:
     '''
     >>> type(insert('text', 1, 1))
     <class 'NoneType'>
