@@ -213,7 +213,6 @@ def admin_person_message_nullify(person_id: int, message_id: int):
 @login_required
 @admin_required
 def admin_person_title(person_id: int):
-    # TODO
     questions = questions_model.select_where_person(person_id)
     def f(question):
         question['actions'] = ({'label': 'Nullifier',

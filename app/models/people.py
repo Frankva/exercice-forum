@@ -5,8 +5,9 @@ def get_request_select() -> str:
     >>> type(get_request_select())
     <class 'str'>
     '''
-    return ('SELECT person_id, firstname, lastname '
-        'FROM people; ')
+    return ('SELECT person_id, firstname, lastname, text AS \'email\' '
+        'FROM people '
+        'NATURAL JOIN emails; ')
 
 def select_people():
     '''
@@ -19,8 +20,9 @@ def select_people():
         cur.execute(get_request_select())
         rows = tuple(map(lambda row: {'person_id': row[0],
                                       'firstname': row[1],
-                                      'lastname': row[2]}, cur))
-        
+                                      'lastname': row[2],
+                                      'email': row[3]}, cur))
+
         return rows
     except Exception as e:
         print(e)
